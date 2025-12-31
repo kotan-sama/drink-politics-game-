@@ -260,7 +260,7 @@ function scoreCheck(i){
     let pc=players[i].card;
     let cc=centerCard;
     if(pc==="JokerR"||pc==="JokerB"){ addScore(i,3); pulse(i,3); return; }
-    if(cc==="JokerR"||cc==="JokerB"){ players.forEach((_,j)=>{ addScore(j,3); pulse(j,3); }); return; }
+    
     let pv=ranks.indexOf(getRank(pc)), cv=ranks.indexOf(getRank(cc));
     if(pv===-1||cv===-1) return;
     if(pv===cv){ addScore(i,2); pulse(i,2); return; }
@@ -268,7 +268,20 @@ function scoreCheck(i){
 }
 
 // --- 全員判定 ---
-function scoreAllPlayers(){ players.forEach((_,i)=>scoreCheck(i)); }
+function scoreAllPlayers(){
+
+    // ★ 中央がジョーカーなら 1回だけ全員+3
+    if(centerCard==="JokerR" || centerCard==="JokerB"){
+        players.forEach((_,j)=>{
+            addScore(j,3);
+            pulse(j,3);
+        });
+        return;
+    }
+
+    // それ以外は通常処理
+    players.forEach((_,i)=>scoreCheck(i));
+}
 
 // --- 得点加算・演出 ---
 function addScore(i,pts){
