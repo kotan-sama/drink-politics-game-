@@ -13,16 +13,16 @@ body{
 }
 #table{
     position:relative;
-    width:90vw;      /* 画面幅の90％ */
-    height:90vw;     /* 正方形にするため幅に合わせる */
-    max-width:800px; /* 最大幅800px */
+    width:90vw;
+    height:90vw;
+    max-width:800px;
     margin:0 auto;
     border-radius:50%;
     background:#0f7a3e;
 }
 button{
     margin:5px;
-    padding:10px 20px; /* タッチしやすい大きさに */
+    padding:10px 20px;
     font-size:16px;
 }
 .player{
@@ -63,8 +63,18 @@ button{
     box-shadow:0 0 10px 4px lightblue inset;
 }
 #deckArea{ margin-top:10px; }
-button{ margin:5px; padding:8px 15px; }
-#drawnArea{ margin-top:10px; }
+#drawnCardArea{
+    margin-top:10px;
+    width:100px;
+    height:145px;
+    border:2px solid yellow;
+    border-radius:10px;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:10px auto;
+}
 #rules{
     background:#fff;
     color:#000;
@@ -87,35 +97,20 @@ button{ margin:5px; padding:8px 15px; }
 
 <body>
 
-<h1>政治ゲーム</h1>
+<h1>Card Slot Game</h1>
 
 <label>プレイヤー人数：</label>
 <select id="numPlayers">
-<option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+<option>2</option><option>3</option><option>4</option><option>5</option>
+<option>6</option><option>7</option><option>8</option>
 </select>
 <button id="start">ゲーム開始</button>
 <button id="showRule">ルール</button>
 
 <div id="deckArea">山札残り：<span id="deckCount">0</span>枚</div>
-<div id="drawnArea">引いたカード：<span id="drawnCard"></span></div>
+<div id="drawnCardArea"></div>
 
 <div id="table"></div>
-
-<div id="drawnCardArea" style="
-    position:absolute;
-    width:100px;    /* 表示サイズ調整 */
-    height:145px;
-    top: 50%;       /* 中央スロットの横あたり */
-    left: 65%;      /* 中央スロットの横 */
-    transform:translate(-50%,-50%);
-    border:2px solid yellow;
-    border-radius:10px;
-    background:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-"></div>
-
 <button id="getCard" disabled>カードを引く</button>
 
 <div class="overlay" id="ov"></div>
@@ -138,13 +133,10 @@ button{ margin:5px; padding:8px 15px; }
 // --- カード情報 ---
 const suits=["S","H","D","C"];
 const ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-
 let deck=[],players=[],centerCard=null,centerDom=null,turn=0,drawnCard=null;
 
 // --- カード画像 ---
-function cardImg(card){
-    return `<img src="cards/${card}.png">`;
-}
+function cardImg(card){ return `<img src="cards/${card}.png" style="width:90%;height:auto;">`; }
 
 // --- 山札生成 ---
 function makeDeck(){
@@ -154,13 +146,13 @@ function makeDeck(){
             deck.push(r+s);
         }
     }
-    deck.push("JokerR");
-    deck.push("JokerB");
+    deck.push("JokerR","JokerB");
     deck.sort(()=>Math.random()-0.5);
     updateDeckCount();
 }
 
-function updateDeckCount(){ document.getElementById("deckCount").innerText=deck.length; }
+// --- 山札カウント更新 ---
+function updateDeckCount(){ document.getElementById("deckCount").innerText = deck.length; }
 
 // --- ランク抽出 ---
 function getRank(card){
@@ -199,14 +191,6 @@ function renderTable(n){
     c.style.transform="translate(-50%,-50%)";
     t.appendChild(c);
     centerDom=c;
-
-    c.onclick=()=>{ 
-        if(drawnCard){ 
-            centerCard=drawnCard; 
-            c.innerHTML=cardImg(centerCard); 
-            finishPlacement(); 
-        } 
-    };
 }
 
 // --- ゲーム開始 ---
@@ -223,7 +207,7 @@ function startGame(){
     centerCard=deck.pop();
     centerDom.innerHTML=cardImg(centerCard);
 
-    enableSlots();
+    document.getElementById("getCard").disabled=false;
 }
 
 // --- ターンハイライト ---
@@ -249,54 +233,24 @@ function disableSlots(){ players.forEach(p=>p.dom.querySelector(".slot").onclick
 
 // --- スコア判定 ---
 function scoreCheck(i){
-    let pc = players[i].card;
-    let cc = centerCard;
-
-    if(pc==="JokerR" || pc==="JokerB"){
-        addScore(i,3);
-        pulse(i,3);
-        return;
-    }
-
-    if(cc==="JokerR" || cc==="JokerB"){
-        players.forEach((_,j)=>{
-            addScore(j,3);
-            pulse(j,3);
-        });
-        return;
-    }
-
-    let pr = getRank(pc);
-    let cr = getRank(cc);
-    let pv = ranks.indexOf(pr);
-    let cv = ranks.indexOf(cr);
-    if(pv===-1 || cv===-1) return;
-
-    if(pv===cv){
-        addScore(i,2);
-        pulse(i,2);
-        return;
-    }
-    if((pv+1)%13===cv || (cv+1)%13===pv){
-        addScore(i,1);
-        pulse(i,1);
-        return;
-    }
+    let pc=players[i].card;
+    let cc=centerCard;
+    if(pc==="JokerR"||pc==="JokerB"){ addScore(i,3); pulse(i,3); return; }
+    if(cc==="JokerR"||cc==="JokerB"){ players.forEach((_,j)=>{ addScore(j,3); pulse(j,3); }); return; }
+    let pv=ranks.indexOf(getRank(pc)), cv=ranks.indexOf(getRank(cc));
+    if(pv===-1||cv===-1) return;
+    if(pv===cv){ addScore(i,2); pulse(i,2); return; }
+    if((pv+1)%13===cv || (cv+1)%13===pv){ addScore(i,1); pulse(i,1); return; }
 }
 
 // --- 全員判定 ---
-function scoreAllPlayers(){
-    players.forEach((p,i)=>{
-        scoreCheck(i);
-    });
-}
+function scoreAllPlayers(){ players.forEach((_,i)=>scoreCheck(i)); }
 
 // --- 得点加算・演出 ---
 function addScore(i,pts){
     players[i].score+=pts;
     players[i].dom.querySelector(".score").innerText=players[i].score;
 }
-
 function pulse(i,pts){
     let el=players[i].dom.querySelector(".slot");
     el.classList.add(pts===2?"gain2":"gain1");
@@ -307,25 +261,20 @@ function pulse(i,pts){
 function finishPlacement(){
     drawnCard=null;
     disableSlots();
-
-    // ★ 全員判定
     scoreAllPlayers();
-
     turn=(turn+1)%players.length;
     highlightTurn();
+    document.getElementById("drawnCardArea").innerHTML="";
 }
 
 // --- ボタン操作 ---
 document.getElementById("start").onclick=startGame;
 
 document.getElementById("getCard").onclick=()=>{
-    if(deck.length===0){
-        alert("ゲーム終了！");
-        return;
-    }
+    if(deck.length===0){ alert("ゲーム終了！"); return; }
     drawnCard=deck.pop();
     updateDeckCount();
-    document.getElementById("drawnCard").innerHTML=cardImg(drawnCard);
+    document.getElementById("drawnCardArea").innerHTML=cardImg(drawnCard);
     enableSlots();
 };
 
@@ -335,5 +284,3 @@ function hideRule(){ ov.style.display="none"; rules.style.display="none"; }
 
 </body>
 </html>
-
-
