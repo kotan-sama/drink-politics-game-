@@ -29,8 +29,8 @@ button{
     color:white;
 }
 .slot,.center-slot{
-    width:135px;
-    height:195px;
+    width:108px;
+    height:156px;
     margin:6px auto;
     border-radius:10px;
     background:white;
@@ -71,8 +71,8 @@ button{
     
 #drawnCardArea{
     position: absolute;
-    width:150px;
-    height:218px;
+    width:135px;
+    height:195px;
     border:2px solid yellow;
     border-radius:10px;
     background:#fff;
@@ -153,7 +153,12 @@ function makeDeck(){
         }
     }
     deck.push("JokerR","JokerB");
-    deck.sort(()=>Math.random()-0.5);
+    function shuffle(array){
+    for(let i = array.length - 1; i > 0; i--){
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
     updateDeckCount();
 }
 
