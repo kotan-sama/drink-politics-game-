@@ -210,6 +210,17 @@ function startGame(){
     document.getElementById("getCard").disabled=false;
 }
 
+function showDrawnCard(card){
+    const area = document.getElementById("drawnCardArea");
+    area.innerHTML = cardImg(card);
+
+    // 真ん中スロットの横に表示
+    const rect = centerDom.getBoundingClientRect();
+    area.style.position = "absolute";
+    area.style.left = (rect.right + 10 + window.scrollX) + "px"; // 右横に10px
+    area.style.top = (rect.top + rect.height/2 + window.scrollY) + "px";
+}
+    
 // --- ターンハイライト ---
 function highlightTurn(){
     document.querySelectorAll(".player").forEach((p,i)=>{
@@ -227,6 +238,13 @@ function enableSlots(){
             finishPlacement();
         }
     });
+    // 中央スロット
+    centerDom.onclick = () => {
+        if(!drawnCard) return;
+            centercard=drawnCard;
+            centerdom.innerHTML=cardImg(centercard);
+            finishPlacement();
+                    }
 }
 
 function disableSlots(){ players.forEach(p=>p.dom.querySelector(".slot").onclick=null); }
@@ -270,11 +288,11 @@ function finishPlacement(){
 // --- ボタン操作 ---
 document.getElementById("start").onclick=startGame;
 
-document.getElementById("getCard").onclick=()=>{
-    if(deck.length===0){ alert("ゲーム終了！"); return; }
-    drawnCard=deck.pop();
+document.getElementById("getCard").onclick = () => {
+    if(deck.length === 0){ alert("ゲーム終了！"); return; }
+    drawnCard = deck.pop();
     updateDeckCount();
-    document.getElementById("drawnCardArea").innerHTML=cardImg(drawnCard);
+    showDrawnCard(drawnCard);
     enableSlots();
 };
 
