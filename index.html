@@ -224,17 +224,6 @@ function startGame(){
     centerDom.innerHTML=cardImg(centerCard);
 
     enableSlots();
-        document.getElementById("getCard").onclick = () => {
-        if(deck.length===0) return alert("ゲーム終了！");
-        drawnCard = deck.pop();
-        updateDeckCount();
-
-        // 引いたカード画像を表示
-        const area = document.getElementById("drawnCardArea");
-        area.innerHTML = cardImg(drawnCard); 
-
-        enableSlots();
-    };
 }
 
 // --- ターンハイライト ---
