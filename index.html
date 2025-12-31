@@ -145,20 +145,29 @@ let deck=[],players=[],centerCard=null,centerDom=null,turn=0,drawnCard=null;
 function cardImg(card){ return `<img src="cards/${card}.png" style="width:90%;height:auto;">`; }
 
 // --- 山札生成 ---
-function makeDeck(){
+function makeDeck() {
     deck = [];
-    for(let s of suits){
-        for(let r of ranks){
-            deck.push(r+s);
+
+    for (let s of suits) {
+        for (let r of ranks) {
+            deck.push(r + s);
         }
     }
-    deck.push("JokerR","JokerB");
-    function shuffle(array){
-    for(let i = array.length - 1; i > 0; i--){
-        let j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+
+    // ジョーカー追加
+    deck.push("JokerR", "JokerB");
+
+    // シャッフル
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
-}
+
+    shuffle(deck);
+    shuffle(deck);
+
     updateDeckCount();
 }
 
