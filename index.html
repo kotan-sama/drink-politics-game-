@@ -11,15 +11,7 @@ body{
     background:#0b5b2e;
     color:white;
 }
-#table{
-    position:relative;
-    width:90vw;
-    height:90vw;
-    max-width:800px;
-    margin:0 auto;
-    border-radius:50%;
-    background:#0f7a3e;
-}
+
 button{
     margin:5px;
     padding:10px 20px;
@@ -239,6 +231,7 @@ function enableSlots(){
         }
     });
     // 中央スロット
+    centerDom.style.zIndex =500; //tableより高く
     centerDom.onclick = () => {
         if(!drawnCard) return;
             centercard=drawnCard;
