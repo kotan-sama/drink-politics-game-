@@ -55,8 +55,20 @@ button{
     box-shadow:0 0 10px 4px lightblue inset;
 }
 #deckArea{ margin-top:10px; }
+
+#table{
+    position: relative;
+    width: 90vw;       /* 画面幅の90% */
+    height: 90vw;      /* 正方形にする */
+    max-width: 800px;
+    max-height: 800px;
+    margin: 50px auto 20px; /* 上に余白を確保 */
+    border-radius: 50%;
+    background: #0f7a3e;
+}
+    
 #drawnCardArea{
-    margin-top:10px;
+    position: absolute;
     width:100px;
     height:145px;
     border:2px solid yellow;
@@ -65,7 +77,7 @@ button{
     display:flex;
     align-items:center;
     justify-content:center;
-    margin:10px auto;
+    z-index:1000;      /* テーブルより前面 */
 }
 #rules{
     background:#fff;
@@ -234,8 +246,8 @@ function enableSlots(){
     centerDom.style.zIndex =500; //tableより高く
     centerDom.onclick = () => {
         if(!drawnCard) return;
-            centercard=drawnCard;
-            centerdom.innerHTML=cardImg(centercard);
+            centerCard=drawnCard;
+            centerDom.innerHTML=cardImg(centercard);
             finishPlacement();
                     }
 }
