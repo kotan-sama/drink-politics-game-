@@ -238,7 +238,7 @@ function showDrawnCard(card){
     const rect = centerDom.getBoundingClientRect();
     area.style.position = "absolute";
     area.style.left = (rect.right + 10 + window.scrollX) + "px"; // 右横に10px
-    area.style.top = (rect.top + rect.height*0.2 + window.scrollY) + "px";
+    area.style.top = (rect.top + rect.height*0.05 + window.scrollY) + "px";
 }
     
 // --- ターンハイライト ---
@@ -271,30 +271,39 @@ function disableSlots(){ players.forEach(p=>p.dom.querySelector(".slot").onclick
 
 // --- スコア判定 ---
 function scoreCheck(i){
-    let pc=players[i].card;
-    let cc=centerCard;
-    if(pc==="JokerR"||pc==="JokerB"){ addScore(i,3); pulse(i,3); return; }
-    
+    let pc = players[i].card;
+    let cc = centerCard;
+    let add = 0;
+
+    // 個人ジョーカー
+    if(pc==="JokerR"||pc==="JokerB") add += 3;
+
     let pv=ranks.indexOf(getRank(pc)), cv=ranks.indexOf(getRank(cc));
-    if(pv===-1||cv===-1) return;
-    if(pv===cv){ addScore(i,2); pulse(i,2); return; }
-    if((pv+1)%13===cv || (cv+1)%13===pv){ addScore(i,1); pulse(i,1); return; }
+    if(pv!==-1 && cv!==-1){
+        if(pv===cv) add += 2;
+        else if((pv+1)%13===cv || (cv+1)%13===pv) add += 1;
+    }
+
+    if(add>0){
+        addScore(i,add);
+        pulse(i,add);
+    }
 }
 
 // --- 全員判定 ---
 function scoreAllPlayers(){
 
-    // ★ 中央がジョーカーなら 1回だけ全員+3
-    if(centerCard==="JokerR" || centerCard==="JokerB"){
-        players.forEach((_,j)=>{
-            addScore(j,3);
-            pulse(j,3);
-        });
-        return;
-    }
+    let centerBonus = 
+        (centerCard==="JokerR" || centerCard==="JokerB") ? 3 : 0;
 
-    // それ以外は通常処理
-    players.forEach((_,i)=>scoreCheck(i));
+    players.forEach((_,i)=>{
+        if(centerBonus>0){
+            addScore(i,centerBonus);
+            pulse(i,centerBonus);
+        }
+
+        scoreCheck(i);   // ← さらに個人判定
+    });
 }
 
 // --- 得点加算・演出 ---
