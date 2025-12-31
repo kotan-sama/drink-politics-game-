@@ -65,6 +65,7 @@ button{
     margin: 50px auto 20px; /* 上に余白を確保 */
     border-radius: 50%;
     background: #0f7a3e;
+    z-index:100;
 }
     
 #drawnCardArea{
@@ -77,7 +78,7 @@ button{
     display:flex;
     align-items:center;
     justify-content:center;
-    z-index:1000;      /* テーブルより前面 */
+    z-index:3000;      /* テーブルより前面 */
 }
 #rules{
     background:#fff;
@@ -222,7 +223,7 @@ function showDrawnCard(card){
     const rect = centerDom.getBoundingClientRect();
     area.style.position = "absolute";
     area.style.left = (rect.right + 10 + window.scrollX) + "px"; // 右横に10px
-    area.style.top = (rect.top + rect.height/2 + window.scrollY) + "px";
+    area.style.top = (rect.top + rect.height/2 + window.scrollY + 50) + "px";
 }
     
 // --- ターンハイライト ---
@@ -243,11 +244,11 @@ function enableSlots(){
         }
     });
     // 中央スロット
-    centerDom.style.zIndex =500; //tableより高く
+    centerDom.style.zIndex =4000; //tableより高く
     centerDom.onclick = () => {
         if(!drawnCard) return;
             centerCard=drawnCard;
-            centerDom.innerHTML=cardImg(centercard);
+            centerDom.innerHTML=cardImg(centerCard);
             finishPlacement();
                     }
 }
